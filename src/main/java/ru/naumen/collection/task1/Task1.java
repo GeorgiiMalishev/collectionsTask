@@ -1,5 +1,8 @@
 package ru.naumen.collection.task1;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Дано:
  * <pre>
@@ -24,6 +27,10 @@ package ru.naumen.collection.task1;
  */
 public class Task1
 {
+    //был выбран HashMap, потому что он хранит пары ключ-значения
+    // и сложность добавления и получения О(1), т.к. хэш функция определена верно.
+    private final Map<Ticket, Goods> ticketGoodsMap = new HashMap<>();
+
     public enum Goods {
         /**
          * нет товаров
@@ -47,7 +54,6 @@ public class Task1
      * <p>Достаточно их определить только для id, т.к. он уникален</p>
      */
     public Goods getGoods(Ticket ticket) {
-        // TODO реализовать
-        return null;
+        return ticketGoodsMap.get(ticket);
     }
 }

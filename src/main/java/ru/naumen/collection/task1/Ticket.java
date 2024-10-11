@@ -17,7 +17,7 @@ public class Ticket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return id == ticket.id && Objects.equals(client, ticket.client);
+        return id == ticket.id;
     }
 
     @Override

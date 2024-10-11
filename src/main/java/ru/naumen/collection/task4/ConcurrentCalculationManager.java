@@ -1,9 +1,6 @@
 package ru.naumen.collection.task4;
 
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 /**
@@ -16,14 +13,11 @@ public class ConcurrentCalculationManager<T> {
      */
     //Выбрана за потокобезопасность и прямую передачу между потоками.
     //Сложность: O(1) для add и take.
-    private final BlockingQueue<Supplier<T>> taskQueue = new LinkedBlockingQueue<>();
-    //Выбрана за потокобезопасность и быстрый доступ к данным.
-    //Сложность: O(1) для put и get.
-    private final Map<Supplier<T>, T> taskMap = new ConcurrentHashMap<>();
+    private final BlockingQueue<Future<T>> taskQueue = new LinkedBlockingQueue<>();
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public void addTask(Supplier<T> task) {
-        taskQueue.add(task);
-        taskMap.put(task, task.get());
+        taskQueue.add(executorService.submit(task::get));
     }
 
     /**
@@ -31,8 +25,11 @@ public class ConcurrentCalculationManager<T> {
      * Возвращает результаты в том порядке, в котором добавлялись задачи.
      */
     public T getResult() throws InterruptedException {
-        while (!taskMap.containsKey(taskQueue.peek())) {
+        try {
+            return taskQueue.take().get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
-        return taskMap.get(taskQueue.take());
     }
+
 }
